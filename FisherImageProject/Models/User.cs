@@ -7,5 +7,6 @@
         public string Email { get; set; }
         // Replace this with something much better after understanding improves
         public string Password { get; set; }
+        public string AvatarUrl { get; set; }
     }
 }

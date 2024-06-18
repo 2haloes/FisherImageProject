@@ -1,58 +1,58 @@
 Tables:
-- User
+- User (done)
   - Id [Long]
   - UserName [String]
   - Email [String]
   - Password [???]
   - AvatarUrl [String] (Images will be stored on disk)
-- Image
+- Image (done)
   - Id [Long]
   - Title [String]
   - Description [String]
   - ImageSource [String]
   - ImageUrl [String] (Images will be stored on disk)
   - Hidden [Bool]
-- Tags
+- Tag (done)
   - Id [Long]
   - TagName [String]
   - TagCategoryId [Long]
-- TagsBanned
+- TagBanned (done)
   - Id [Long]
   - TagName [String]
   - TagCategoryId [Long]
-- TagCategory
+- TagCategory (done)
   - Id [Long]
   - CategoryName [String]
   - CategoryRank [Int]
   - CategoryColour [String]
 - UserSetting
   - TODO
-- ImageTag
+- ImageTag (Done)
   - Id [Long]
   - TagID [Long]
   - PositiveVotes [Long]
   - NegitiveVotes [Long]
-- ImageVote
+- ImageVote (Done)
   - Id [Long]
   - ImageId [Long]
   - UserId [Long]
   - PositiveVote [Bool]
-- ImageBookmark
+- ImageBookmark (Done)
   - Id [Long]
   - ImageId [Long]
   - UserId [Long]
-- ImageComment
+- ImageComment (Done)
   - Id [Long]
   - ImageId [Long]
   - UserId [Long]
   - Content [String]
   - Hidden [Bool]
-- ImageCommentVote
+- ImageCommentVote (Done)
   - Id [Long]
   - ImageCommentId [Long]
   - UserId [Long]
   - PositiveVote [Bool]
-- SystemSetting
+- SystemSetting (Done)
   - VotesPromoteTag [Long] (Default: 3)
   - VotesDemoteTag [Long] (Default: 3)
   - VotesHideComment [Long] (Default: 5)
