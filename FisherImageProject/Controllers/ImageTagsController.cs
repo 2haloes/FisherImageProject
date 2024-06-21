@@ -11,50 +11,47 @@ namespace FisherImageProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class ImageTagsController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public UsersController(DatabaseContext context)
+        public ImageTagsController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/ImageTags
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<ImageTag>>> GetImageTags()
         {
-            return await _context
-                .Users
-                .Select(x => UserToDTO(x))
-                .ToListAsync();
+            return await _context.ImageTags.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/ImageTags/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(long id)
+        public async Task<ActionResult<ImageTag>> GetImageTag(long id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var imageTag = await _context.ImageTags.FindAsync(id);
 
-            if (user == null)
+            if (imageTag == null)
             {
                 return NotFound();
             }
 
-            return UserToDTO(user);
+            return imageTag;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/ImageTags/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutImageTag(long id, ImageTag imageTag)
         {
-            if (id != user.Id)
+            if (id != imageTag.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(imageTag).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +59,7 @@ namespace FisherImageProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!ImageTagExists(id))
                 {
                     return NotFound();
                 }
@@ -75,44 +72,36 @@ namespace FisherImageProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/ImageTags
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<ImageTag>> PostImageTag(ImageTag imageTag)
         {
-            _context.Users.Add(user);
+            _context.ImageTags.Add(imageTag);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, UserToDTO(user));
+            return CreatedAtAction("GetImageTag", new { id = imageTag.Id }, imageTag);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/ImageTags/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> DeleteImageTag(long id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var imageTag = await _context.ImageTags.FindAsync(id);
+            if (imageTag == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.ImageTags.Remove(imageTag);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(long id)
+        private bool ImageTagExists(long id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.ImageTags.Any(e => e.Id == id);
         }
-
-        private static UserDTO UserToDTO(User fullUser) =>
-            new UserDTO
-            {
-                Id = fullUser.Id,
-                UserName = fullUser.UserName,
-                Email = fullUser.Email
-            };
     }
 }

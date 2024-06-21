@@ -11,50 +11,47 @@ namespace FisherImageProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class ImageBookmarksController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public UsersController(DatabaseContext context)
+        public ImageBookmarksController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/ImageBookmarks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<ImageBookmark>>> GetImageBookmarks()
         {
-            return await _context
-                .Users
-                .Select(x => UserToDTO(x))
-                .ToListAsync();
+            return await _context.ImageBookmarks.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/ImageBookmarks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(long id)
+        public async Task<ActionResult<ImageBookmark>> GetImageBookmark(long id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var imageBookmark = await _context.ImageBookmarks.FindAsync(id);
 
-            if (user == null)
+            if (imageBookmark == null)
             {
                 return NotFound();
             }
 
-            return UserToDTO(user);
+            return imageBookmark;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/ImageBookmarks/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutImageBookmark(long id, ImageBookmark imageBookmark)
         {
-            if (id != user.Id)
+            if (id != imageBookmark.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(imageBookmark).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +59,7 @@ namespace FisherImageProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!ImageBookmarkExists(id))
                 {
                     return NotFound();
                 }
@@ -75,44 +72,36 @@ namespace FisherImageProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/ImageBookmarks
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<ImageBookmark>> PostImageBookmark(ImageBookmark imageBookmark)
         {
-            _context.Users.Add(user);
+            _context.ImageBookmarks.Add(imageBookmark);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, UserToDTO(user));
+            return CreatedAtAction("GetImageBookmark", new { id = imageBookmark.Id }, imageBookmark);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/ImageBookmarks/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> DeleteImageBookmark(long id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var imageBookmark = await _context.ImageBookmarks.FindAsync(id);
+            if (imageBookmark == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.ImageBookmarks.Remove(imageBookmark);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(long id)
+        private bool ImageBookmarkExists(long id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.ImageBookmarks.Any(e => e.Id == id);
         }
-
-        private static UserDTO UserToDTO(User fullUser) =>
-            new UserDTO
-            {
-                Id = fullUser.Id,
-                UserName = fullUser.UserName,
-                Email = fullUser.Email
-            };
     }
 }

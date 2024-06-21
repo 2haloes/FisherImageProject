@@ -11,50 +11,47 @@ namespace FisherImageProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class ImageCommentsController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public UsersController(DatabaseContext context)
+        public ImageCommentsController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/ImageComments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<ImageComment>>> GetImageComments()
         {
-            return await _context
-                .Users
-                .Select(x => UserToDTO(x))
-                .ToListAsync();
+            return await _context.ImageComments.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/ImageComments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(long id)
+        public async Task<ActionResult<ImageComment>> GetImageComment(long id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var imageComment = await _context.ImageComments.FindAsync(id);
 
-            if (user == null)
+            if (imageComment == null)
             {
                 return NotFound();
             }
 
-            return UserToDTO(user);
+            return imageComment;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/ImageComments/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutImageComment(long id, ImageComment imageComment)
         {
-            if (id != user.Id)
+            if (id != imageComment.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(imageComment).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +59,7 @@ namespace FisherImageProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!ImageCommentExists(id))
                 {
                     return NotFound();
                 }
@@ -75,44 +72,36 @@ namespace FisherImageProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/ImageComments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<ImageComment>> PostImageComment(ImageComment imageComment)
         {
-            _context.Users.Add(user);
+            _context.ImageComments.Add(imageComment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, UserToDTO(user));
+            return CreatedAtAction("GetImageComment", new { id = imageComment.Id }, imageComment);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/ImageComments/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> DeleteImageComment(long id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var imageComment = await _context.ImageComments.FindAsync(id);
+            if (imageComment == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.ImageComments.Remove(imageComment);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(long id)
+        private bool ImageCommentExists(long id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.ImageComments.Any(e => e.Id == id);
         }
-
-        private static UserDTO UserToDTO(User fullUser) =>
-            new UserDTO
-            {
-                Id = fullUser.Id,
-                UserName = fullUser.UserName,
-                Email = fullUser.Email
-            };
     }
 }

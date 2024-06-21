@@ -11,50 +11,47 @@ namespace FisherImageProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class TagsController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public UsersController(DatabaseContext context)
+        public TagsController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/Tags
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<Tag>>> GetTags()
         {
-            return await _context
-                .Users
-                .Select(x => UserToDTO(x))
-                .ToListAsync();
+            return await _context.Tags.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/Tags/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(long id)
+        public async Task<ActionResult<Tag>> GetTag(long id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var tag = await _context.Tags.FindAsync(id);
 
-            if (user == null)
+            if (tag == null)
             {
                 return NotFound();
             }
 
-            return UserToDTO(user);
+            return tag;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Tags/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutTag(long id, Tag tag)
         {
-            if (id != user.Id)
+            if (id != tag.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(tag).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +59,7 @@ namespace FisherImageProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!TagExists(id))
                 {
                     return NotFound();
                 }
@@ -75,44 +72,36 @@ namespace FisherImageProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/Tags
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<Tag>> PostTag(Tag tag)
         {
-            _context.Users.Add(user);
+            _context.Tags.Add(tag);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, UserToDTO(user));
+            return CreatedAtAction("GetTag", new { id = tag.Id }, tag);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/Tags/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> DeleteTag(long id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var tag = await _context.Tags.FindAsync(id);
+            if (tag == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.Tags.Remove(tag);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(long id)
+        private bool TagExists(long id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.Tags.Any(e => e.Id == id);
         }
-
-        private static UserDTO UserToDTO(User fullUser) =>
-            new UserDTO
-            {
-                Id = fullUser.Id,
-                UserName = fullUser.UserName,
-                Email = fullUser.Email
-            };
     }
 }

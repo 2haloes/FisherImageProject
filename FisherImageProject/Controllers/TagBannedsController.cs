@@ -11,50 +11,47 @@ namespace FisherImageProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class TagBannedsController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public UsersController(DatabaseContext context)
+        public TagBannedsController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/TagBanneds
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<TagBanned>>> GetTagBanneds()
         {
-            return await _context
-                .Users
-                .Select(x => UserToDTO(x))
-                .ToListAsync();
+            return await _context.TagBanneds.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/TagBanneds/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(long id)
+        public async Task<ActionResult<TagBanned>> GetTagBanned(long id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var tagBanned = await _context.TagBanneds.FindAsync(id);
 
-            if (user == null)
+            if (tagBanned == null)
             {
                 return NotFound();
             }
 
-            return UserToDTO(user);
+            return tagBanned;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/TagBanneds/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutTagBanned(long id, TagBanned tagBanned)
         {
-            if (id != user.Id)
+            if (id != tagBanned.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(tagBanned).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +59,7 @@ namespace FisherImageProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!TagBannedExists(id))
                 {
                     return NotFound();
                 }
@@ -75,44 +72,36 @@ namespace FisherImageProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/TagBanneds
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<TagBanned>> PostTagBanned(TagBanned tagBanned)
         {
-            _context.Users.Add(user);
+            _context.TagBanneds.Add(tagBanned);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, UserToDTO(user));
+            return CreatedAtAction("GetTagBanned", new { id = tagBanned.Id }, tagBanned);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/TagBanneds/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> DeleteTagBanned(long id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var tagBanned = await _context.TagBanneds.FindAsync(id);
+            if (tagBanned == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.TagBanneds.Remove(tagBanned);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(long id)
+        private bool TagBannedExists(long id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.TagBanneds.Any(e => e.Id == id);
         }
-
-        private static UserDTO UserToDTO(User fullUser) =>
-            new UserDTO
-            {
-                Id = fullUser.Id,
-                UserName = fullUser.UserName,
-                Email = fullUser.Email
-            };
     }
 }

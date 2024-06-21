@@ -11,50 +11,47 @@ namespace FisherImageProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class SystemSettingsController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public UsersController(DatabaseContext context)
+        public SystemSettingsController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/SystemSettings
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<SystemSetting>>> GetSystemSettings()
         {
-            return await _context
-                .Users
-                .Select(x => UserToDTO(x))
-                .ToListAsync();
+            return await _context.SystemSettings.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/SystemSettings/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(long id)
+        public async Task<ActionResult<SystemSetting>> GetSystemSetting(long id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var systemSetting = await _context.SystemSettings.FindAsync(id);
 
-            if (user == null)
+            if (systemSetting == null)
             {
                 return NotFound();
             }
 
-            return UserToDTO(user);
+            return systemSetting;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/SystemSettings/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutSystemSetting(long id, SystemSetting systemSetting)
         {
-            if (id != user.Id)
+            if (id != systemSetting.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(systemSetting).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +59,7 @@ namespace FisherImageProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!SystemSettingExists(id))
                 {
                     return NotFound();
                 }
@@ -75,44 +72,36 @@ namespace FisherImageProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/SystemSettings
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<SystemSetting>> PostSystemSetting(SystemSetting systemSetting)
         {
-            _context.Users.Add(user);
+            _context.SystemSettings.Add(systemSetting);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, UserToDTO(user));
+            return CreatedAtAction("GetSystemSetting", new { id = systemSetting.Id }, systemSetting);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/SystemSettings/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> DeleteSystemSetting(long id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var systemSetting = await _context.SystemSettings.FindAsync(id);
+            if (systemSetting == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.SystemSettings.Remove(systemSetting);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(long id)
+        private bool SystemSettingExists(long id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.SystemSettings.Any(e => e.Id == id);
         }
-
-        private static UserDTO UserToDTO(User fullUser) =>
-            new UserDTO
-            {
-                Id = fullUser.Id,
-                UserName = fullUser.UserName,
-                Email = fullUser.Email
-            };
     }
 }

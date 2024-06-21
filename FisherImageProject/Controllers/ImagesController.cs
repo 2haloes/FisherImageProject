@@ -11,50 +11,47 @@ namespace FisherImageProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class ImagesController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public UsersController(DatabaseContext context)
+        public ImagesController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/Images
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<Image>>> GetImages()
         {
-            return await _context
-                .Users
-                .Select(x => UserToDTO(x))
-                .ToListAsync();
+            return await _context.Images.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/Images/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(long id)
+        public async Task<ActionResult<Image>> GetImage(long id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var image = await _context.Images.FindAsync(id);
 
-            if (user == null)
+            if (image == null)
             {
                 return NotFound();
             }
 
-            return UserToDTO(user);
+            return image;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Images/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutImage(long id, Image image)
         {
-            if (id != user.Id)
+            if (id != image.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(image).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +59,7 @@ namespace FisherImageProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!ImageExists(id))
                 {
                     return NotFound();
                 }
@@ -75,44 +72,36 @@ namespace FisherImageProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/Images
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<Image>> PostImage(Image image)
         {
-            _context.Users.Add(user);
+            _context.Images.Add(image);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, UserToDTO(user));
+            return CreatedAtAction("GetImage", new { id = image.Id }, image);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/Images/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> DeleteImage(long id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var image = await _context.Images.FindAsync(id);
+            if (image == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.Images.Remove(image);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(long id)
+        private bool ImageExists(long id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.Images.Any(e => e.Id == id);
         }
-
-        private static UserDTO UserToDTO(User fullUser) =>
-            new UserDTO
-            {
-                Id = fullUser.Id,
-                UserName = fullUser.UserName,
-                Email = fullUser.Email
-            };
     }
 }

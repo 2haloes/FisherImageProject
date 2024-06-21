@@ -30,8 +30,8 @@ Tables:
 - ImageTag (Done)
   - Id [Long]
   - TagID [Long]
-  - PositiveVotes [Long]
-  - NegitiveVotes [Long]
+  - UserId [Long]
+  - PositiveVote [Bool]
 - ImageVote (Done)
   - Id [Long]
   - ImageId [Long]

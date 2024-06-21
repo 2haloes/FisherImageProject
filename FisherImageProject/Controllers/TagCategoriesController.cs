@@ -11,50 +11,47 @@ namespace FisherImageProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class TagCategoriesController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public UsersController(DatabaseContext context)
+        public TagCategoriesController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/TagCategories
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<TagCategory>>> GetTagCategorys()
         {
-            return await _context
-                .Users
-                .Select(x => UserToDTO(x))
-                .ToListAsync();
+            return await _context.TagCategorys.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/TagCategories/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(long id)
+        public async Task<ActionResult<TagCategory>> GetTagCategory(long id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var tagCategory = await _context.TagCategorys.FindAsync(id);
 
-            if (user == null)
+            if (tagCategory == null)
             {
                 return NotFound();
             }
 
-            return UserToDTO(user);
+            return tagCategory;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/TagCategories/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutTagCategory(long id, TagCategory tagCategory)
         {
-            if (id != user.Id)
+            if (id != tagCategory.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(tagCategory).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +59,7 @@ namespace FisherImageProject.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!TagCategoryExists(id))
                 {
                     return NotFound();
                 }
@@ -75,44 +72,36 @@ namespace FisherImageProject.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/TagCategories
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<TagCategory>> PostTagCategory(TagCategory tagCategory)
         {
-            _context.Users.Add(user);
+            _context.TagCategorys.Add(tagCategory);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, UserToDTO(user));
+            return CreatedAtAction("GetTagCategory", new { id = tagCategory.Id }, tagCategory);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/TagCategories/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> DeleteTagCategory(long id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var tagCategory = await _context.TagCategorys.FindAsync(id);
+            if (tagCategory == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.TagCategorys.Remove(tagCategory);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool UserExists(long id)
+        private bool TagCategoryExists(long id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.TagCategorys.Any(e => e.Id == id);
         }
-
-        private static UserDTO UserToDTO(User fullUser) =>
-            new UserDTO
-            {
-                Id = fullUser.Id,
-                UserName = fullUser.UserName,
-                Email = fullUser.Email
-            };
     }
 }
