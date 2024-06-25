@@ -14,6 +14,11 @@ builder.Services.AddDbContext<DatabaseContext>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Create related folders
+string rootFolder = AppDomain.CurrentDomain.BaseDirectory;
+Directory.CreateDirectory(rootFolder + "images");
+Directory.CreateDirectory(rootFolder + "userimages");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

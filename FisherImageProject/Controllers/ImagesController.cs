@@ -77,10 +77,31 @@ namespace FisherImageProject.Controllers
         [HttpPost]
         public async Task<ActionResult<Image>> PostImage(Image image)
         {
-            _context.Images.Add(image);
-            await _context.SaveChangesAsync();
+            if (image.ImageData != null)
+            {
+                string rootFolder = AppDomain.CurrentDomain.BaseDirectory;
+                string[] storageNames = { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
+                Directory.CreateDirectory($"{rootFolder}/images/{storageNames[0]}");
+                string fileExt = Path.GetExtension(image.ImageData.FileName);
+                string fileLocation = $"{storageNames[0]}/{storageNames[1]}{fileExt}";
 
-            return CreatedAtAction("GetImage", new { id = image.Id }, image);
+                using (FileStream fileStream = System.IO.File.Create($"{rootFolder}/images/{fileLocation}"))
+                {
+                    await image.ImageData.CopyToAsync(fileStream);
+                }
+
+                image.ImageData = null;
+                image.ImageUrl = fileLocation;
+                _context.Images.Add(image);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetImage", new { id = image.Id }, image);
+            }
+            else
+            {
+                // As the image creation requires an image, a post without an image is not accepted
+                return BadRequest(image);
+            }
         }
 
         // DELETE: api/Images/5
