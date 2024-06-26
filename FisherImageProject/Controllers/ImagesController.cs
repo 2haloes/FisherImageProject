@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FisherImageProject.Models;
+using FisherImageProject.Shared;
+using System.Reflection;
 
 namespace FisherImageProject.Controllers
 {
@@ -43,7 +45,7 @@ namespace FisherImageProject.Controllers
 
         // PUT: api/Images/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{Id}")]
         public async Task<IActionResult> PutImage(long id, Image image)
         {
             if (id != image.Id)
@@ -77,31 +79,74 @@ namespace FisherImageProject.Controllers
         [HttpPost]
         public async Task<ActionResult<Image>> PostImage(Image image)
         {
-            if (image.ImageData != null)
-            {
-                string rootFolder = AppDomain.CurrentDomain.BaseDirectory;
-                string[] storageNames = { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
-                Directory.CreateDirectory($"{rootFolder}/images/{storageNames[0]}");
-                string fileExt = Path.GetExtension(image.ImageData.FileName);
-                string fileLocation = $"{storageNames[0]}/{storageNames[1]}{fileExt}";
-
-                using (FileStream fileStream = System.IO.File.Create($"{rootFolder}/images/{fileLocation}"))
-                {
-                    await image.ImageData.CopyToAsync(fileStream);
-                }
-
-                image.ImageData = null;
-                image.ImageUrl = fileLocation;
-                _context.Images.Add(image);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction("GetImage", new { id = image.Id }, image);
-            }
-            else
+            if (image.ImageData == null)
             {
                 // As the image creation requires an image, a post without an image is not accepted
                 return BadRequest(image);
             }
+
+            string fileLocation = "";
+
+            try
+            {
+                fileLocation = await ImageUploadShared.ProcessImageUploadAsync(image.ImageData, "images");
+            }
+            catch (Exception ex)
+            {
+                // Should be replaced with throwing a server error with a message
+                throw;
+            }
+
+            image.ImageData = null;
+            image.ImageUrl = fileLocation;
+            image.CreationDate = DateTime.UtcNow;
+            _context.Images.Add(image);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetImage", new { id = image.Id }, image);
+        }
+
+        // PATCH: api/Images/5
+        [HttpPatch("{Id}")]
+        public async Task<IActionResult> PatchImage(long id, Image imageUpdate)
+        {
+            if (id != imageUpdate.Id)
+            {
+                return BadRequest();
+            }
+
+            ImageUpdateDTO imageUpdateDTO = ImageToDTO(imageUpdate);
+            Image currentImage = _context.Entry(imageUpdate).Entity;
+            PropertyInfo[] currentImageProperties = currentImage.GetType().GetProperties();
+            PropertyInfo[] imageUpdateDTOProperties = imageUpdateDTO.GetType().GetProperties();
+            foreach (PropertyInfo propertyInfo in currentImageProperties)
+            {
+                PropertyInfo? DTOPropertyInfo = imageUpdateDTOProperties.FirstOrDefault(DTOProp => DTOProp.Name == propertyInfo.Name);
+                if (DTOPropertyInfo is not null)
+                {
+                    propertyInfo.SetValue(currentImage, (DTOPropertyInfo.GetValue(imageUpdateDTO) ?? propertyInfo.GetValue(currentImage)));
+                }
+            }
+
+            _context.Entry(currentImage).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ImageExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
         // DELETE: api/Images/5
@@ -124,5 +169,16 @@ namespace FisherImageProject.Controllers
         {
             return _context.Images.Any(e => e.Id == id);
         }
+
+        private static ImageUpdateDTO ImageToDTO(Image fullImage) =>
+            new ImageUpdateDTO
+            {
+                Id = fullImage.Id,
+                Title = fullImage.Title,
+                Description = fullImage.Description,
+                ImageSource = fullImage.ImageSource,
+                Hidden = fullImage.Hidden,
+                ModifiedTime = fullImage.ModifiedTime
+            };
     }
 }
