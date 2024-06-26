@@ -116,7 +116,11 @@ namespace FisherImageProject.Controllers
             }
 
             ImageUpdateDTO imageUpdateDTO = ImageToDTO(imageUpdate);
-            Image currentImage = _context.Entry(imageUpdate).Entity;
+            Image? currentImage = _context.Images.FirstOrDefault(imageRecord => imageRecord.Id == imageUpdate.Id);
+            if (currentImage == null)
+            {
+                return BadRequest("Image Id not found");
+            }
             PropertyInfo[] currentImageProperties = currentImage.GetType().GetProperties();
             PropertyInfo[] imageUpdateDTOProperties = imageUpdateDTO.GetType().GetProperties();
             foreach (PropertyInfo propertyInfo in currentImageProperties)
@@ -129,6 +133,7 @@ namespace FisherImageProject.Controllers
             }
 
             _context.Entry(currentImage).State = EntityState.Modified;
+            _context.Images.Update(currentImage);
 
             try
             {
