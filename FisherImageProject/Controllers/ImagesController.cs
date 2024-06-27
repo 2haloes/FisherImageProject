@@ -121,7 +121,7 @@ namespace FisherImageProject.Controllers
             {
                 return BadRequest("Image Id not found");
             }
-            Image updateImage = ControllerFunctionsShared.PatchDatabaseObject(currentImage, imageUpdateDTO);
+            ControllerFunctionsShared.PatchDatabaseObject(currentImage, imageUpdateDTO);
 
             _context.Entry(currentImage).State = EntityState.Modified;
             _context.Images.Update(currentImage);
