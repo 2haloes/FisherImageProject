@@ -89,7 +89,7 @@ namespace FisherImageProject.Controllers
 
             try
             {
-                fileLocation = await ImageUploadShared.ProcessImageUploadAsync(image.ImageData, "images");
+                fileLocation = await ControllerFunctionsShared.ProcessFileUploadAsync(image.ImageData, "images");
             }
             catch (Exception ex)
             {
@@ -121,16 +121,7 @@ namespace FisherImageProject.Controllers
             {
                 return BadRequest("Image Id not found");
             }
-            PropertyInfo[] currentImageProperties = currentImage.GetType().GetProperties();
-            PropertyInfo[] imageUpdateDTOProperties = imageUpdateDTO.GetType().GetProperties();
-            foreach (PropertyInfo propertyInfo in currentImageProperties)
-            {
-                PropertyInfo? DTOPropertyInfo = imageUpdateDTOProperties.FirstOrDefault(DTOProp => DTOProp.Name == propertyInfo.Name);
-                if (DTOPropertyInfo is not null)
-                {
-                    propertyInfo.SetValue(currentImage, (DTOPropertyInfo.GetValue(imageUpdateDTO) ?? propertyInfo.GetValue(currentImage)));
-                }
-            }
+            Image updateImage = ControllerFunctionsShared.PatchDatabaseObject(currentImage, imageUpdateDTO);
 
             _context.Entry(currentImage).State = EntityState.Modified;
             _context.Images.Update(currentImage);
