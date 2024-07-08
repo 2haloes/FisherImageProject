@@ -106,18 +106,17 @@ namespace FisherImageProject.Controllers
             return CreatedAtAction("GetImage", new { id = image.Id }, image);
         }
 
-        // PATCH: api/Images/5
-        [HttpPatch("{Id}")]
-        public async Task<IActionResult> PatchImage(long id, Image imageUpdate)
+        // PATCH: api/Images?id=5
+        [HttpPatch]
+        public async Task<IActionResult> PatchImage(long id, ImageUpdateDTO imageUpdateDTO)
         {
-            if (id != imageUpdate.Id)
+            if (id != imageUpdateDTO.Id)
             {
                 return BadRequest();
             }
 
-            ImageUpdateDTO imageUpdateDTO = ImageToDTO(imageUpdate);
-            Image? currentImage = _context.Images.FirstOrDefault(imageRecord => imageRecord.Id == imageUpdate.Id);
-            if (currentImage == null)
+            Image? currentImage = await _context.Images.FindAsync(id);
+            if (currentImage is null)
             {
                 return BadRequest("Image Id not found");
             }

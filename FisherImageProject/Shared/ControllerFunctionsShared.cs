@@ -31,7 +31,7 @@ namespace FisherImageProject.Shared
         }
 
         /// <summary>
-        /// Takes an object and a DTO of the object for updating and only applies non-null updates
+        /// Takes an object and a DTO of the object for updating and only applies non-null properties from the DTO
         /// </summary>
         /// <typeparam name="TOne"></typeparam>
         /// <typeparam name="TTwo"></typeparam>
@@ -42,13 +42,20 @@ namespace FisherImageProject.Shared
         {
             PropertyInfo[] currentImageProperties = databaseObject.GetType().GetProperties();
             PropertyInfo[] imageUpdateDTOProperties = objectUpdateDTO.GetType().GetProperties();
-            foreach (PropertyInfo propertyInfo in currentImageProperties)
+
+            foreach (PropertyInfo DTOPropertyInfo in imageUpdateDTOProperties)
             {
-                PropertyInfo? DTOPropertyInfo = imageUpdateDTOProperties.FirstOrDefault(DTOProp => DTOProp.Name == propertyInfo.Name);
-                if (DTOPropertyInfo is not null)
+                PropertyInfo? propertyInfo = currentImageProperties.FirstOrDefault(DBProp => DBProp.Name == DTOPropertyInfo.Name);
+                if (propertyInfo is not null)
                 {
                     propertyInfo.SetValue(databaseObject, (DTOPropertyInfo.GetValue(objectUpdateDTO) ?? propertyInfo.GetValue(databaseObject)));
                 }
+            }
+
+            PropertyInfo? modifiedDatePropertyInfo = currentImageProperties.FirstOrDefault(DBProp => DBProp.Name == "ModifiedDate");
+            if (modifiedDatePropertyInfo is not null)
+            {
+                modifiedDatePropertyInfo.SetValue(databaseObject, DateTime.UtcNow);
             }
             return databaseObject;
         }
