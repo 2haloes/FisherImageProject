@@ -99,11 +99,11 @@ namespace FisherImageProject.Controllers
 
             image.ImageData = null;
             image.ImageUrl = fileLocation;
-            image.CreationDate = DateTime.UtcNow;
+            image.CreationTime = DateTime.UtcNow;
             _context.Images.Add(image);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetImage", new { id = image.Id }, image);
+            return CreatedAtAction("GetImage", new { id = image.Id }, image.Id);
         }
 
         // PATCH: api/Images?id=5
@@ -164,16 +164,5 @@ namespace FisherImageProject.Controllers
         {
             return _context.Images.Any(e => e.Id == id);
         }
-
-        private static ImageUpdateDTO ImageToDTO(Image fullImage) =>
-            new ImageUpdateDTO
-            {
-                Id = fullImage.Id,
-                Title = fullImage.Title,
-                Description = fullImage.Description,
-                ImageSource = fullImage.ImageSource,
-                Hidden = fullImage.Hidden,
-                ModifiedTime = fullImage.ModifiedTime
-            };
     }
 }

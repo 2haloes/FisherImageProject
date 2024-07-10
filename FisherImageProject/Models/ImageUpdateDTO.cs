@@ -9,6 +9,5 @@ namespace FisherImageProject.Models
         public string? Description { get; set; }
         public string? ImageSource { get; set; }
         public bool? Hidden { get; set; }
-        public DateTime? ModifiedTime { get; set; }
     }
 }

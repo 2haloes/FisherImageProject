@@ -13,7 +13,7 @@ namespace FisherImageProject.Models
         [NotMapped]
         public IFormFile? ImageData { get; set; }
         public bool? Hidden { get; set; }
-        public DateTime? CreationDate { get; set; }
+        public DateTime? CreationTime { get; set; }
         public DateTime? ModifiedTime { get; set;}
     }
 }
