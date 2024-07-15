@@ -7,5 +7,6 @@
         public string? CategoryDescription { get; set; }
         public int CategoryRank { get; set; }
         public string? CategoryColor { get; set; }
+        public DateTime? CreationDate { get; set; }
     }
 }

@@ -6,5 +6,6 @@
         public long ImageId { get; set; }
         public long UserId { get; set; }
         public bool PositiveVote { get; set; }
+        public DateTime? CreationDate { get; set; }
     }
 }
