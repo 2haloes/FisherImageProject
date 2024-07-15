@@ -52,7 +52,7 @@ namespace FisherImageProject.Shared
                 }
             }
 
-            PropertyInfo? modifiedDatePropertyInfo = currentImageProperties.FirstOrDefault(DBProp => DBProp.Name == "ModifiedDate");
+            PropertyInfo? modifiedDatePropertyInfo = currentImageProperties.FirstOrDefault(DBProp => DBProp.Name == "ModifiedTime");
             if (modifiedDatePropertyInfo is not null)
             {
                 modifiedDatePropertyInfo.SetValue(databaseObject, DateTime.UtcNow);
