@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FisherImageProject.Models;
+using FisherImageProject.Shared;
 
 namespace FisherImageProject.Controllers
 {
@@ -84,6 +85,40 @@ namespace FisherImageProject.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, UserToDTO(user));
+        }
+
+        // PATCH: api/Users?id=5
+        [HttpPatch]
+        public async Task<IActionResult> PatchUser(long id, User userUpdate)
+        {
+            User? currentUser = await _context.Users.FindAsync(userUpdate.Id);
+            if (currentUser is null)
+            {
+                return BadRequest();
+            }
+
+            ControllerFunctionsShared.PatchDatabaseObject(currentUser, userUpdate);
+
+            _context.Entry(currentUser).State = EntityState.Modified;
+            _context.Users.Update(currentUser);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
         // DELETE: api/Users/5

@@ -1,4 +1,5 @@
 ﻿using FisherImageProject.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -58,6 +59,20 @@ namespace FisherImageProject.Shared
                 modifiedDatePropertyInfo.SetValue(databaseObject, DateTime.UtcNow);
             }
             return databaseObject;
+        }
+
+        public static string FullPatchProcess<TOne>(ref DbSet<object> databaseSet, long id, TOne updateObject)
+        {
+            object? currentObject = databaseSet.Find(id);
+            if (currentObject is null)
+            {
+                return "Image Id not found";
+            }
+            PatchDatabaseObject(currentObject, updateObject);
+
+            databaseSet.Update(currentObject);
+
+            return "";
         }
     }
 }

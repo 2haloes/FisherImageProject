@@ -83,6 +83,36 @@ namespace FisherImageProject.Controllers
             return CreatedAtAction("GetImageComment", new { id = imageComment.Id }, imageComment);
         }
 
+        // PATCH: api/ImageComments?id=5
+        [HttpPatch]
+        public async Task<IActionResult> PatchImageComment(long id, ImageComment imageComment)
+        {
+            if (id != imageComment.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(imageComment).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ImageCommentExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
         // DELETE: api/ImageComments/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteImageComment(long id)

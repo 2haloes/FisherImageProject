@@ -115,15 +115,15 @@ namespace FisherImageProject.Controllers
                 return BadRequest();
             }
 
-            Image? currentImage = await _context.Images.FindAsync(id);
-            if (currentImage is null)
-            {
-                return BadRequest("Image Id not found");
-            }
-            ControllerFunctionsShared.PatchDatabaseObject(currentImage, imageUpdateDTO);
+            //Image? currentImage = await _context.Images.FindAsync(id);
+            //if (currentImage is null)
+            //{
+            //    return BadRequest("Image Id not found");
+            //}
+            ControllerFunctionsShared.FullPatchProcess(ref _context.Images, id, imageUpdateDTO);
 
-            _context.Entry(currentImage).State = EntityState.Modified;
-            _context.Images.Update(currentImage);
+            //_context.Entry(currentImage).State = EntityState.Modified;
+            //_context.Images.Update(currentImage);
 
             try
             {
